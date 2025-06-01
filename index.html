@@ -10,92 +10,94 @@
       background: #f9f9f9;
       color: #333;
     }
+
     h1 {
       text-align: center;
       margin-bottom: 20px;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
     }
-    th, td {
+
+    th,
+    td {
       border: 1px solid #ccc;
       padding: 8px;
       text-align: center;
       font-size: 14px;
-      word-wrap: break-word;
     }
+
     th {
-      background-color: #4CAF50;
+      background-color: #4caf50;
       color: white;
     }
+
     td input[type="checkbox"] {
       transform: scale(1.3);
       cursor: pointer;
     }
+
     tr:nth-child(even) {
       background-color: #f2f2f2;
     }
+
     .penalty {
       background-color: #ffcccc !important;
     }
+
     .cross {
       font-size: 20px;
       color: red;
     }
+
     .manage-btn {
       display: inline-block;
       margin: 10px 5px;
       padding: 10px 20px;
       font-size: 16px;
-      background-color: #4CAF50;
+      background-color: #4caf50;
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
     }
+
     .manage-btn:hover {
       background-color: #45a049;
     }
+
     .subject-section {
       display: none;
       margin-top: 40px;
     }
+
     .subject-section.active {
       display: block;
-    }
-    #dropdown {
-      text-align: center;
-      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-
   <h1>🕕️ Monthly Study Tracker</h1>
-
-  <!-- Main tracker table -->
   <table id="tracker-table">
-    <thead>
-      <tr>
-        <th>Day</th>
-        <th>Physics Lec 1</th>
-        <th>Physics Lec 2</th>
-        <th>Chemistry Lec 1</th>
-        <th>Chemistry Lec 2</th>
-        <th>Biology Lec 1</th>
-        <th>Biology Lec 2</th>
-        <th>Penalty Extra</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
+    <tr>
+      <th>Day</th>
+      <th>Physics Lec 1</th>
+      <th>Physics Lec 2</th>
+      <th>Chemistry Lec 1</th>
+      <th>Chemistry Lec 2</th>
+      <th>Biology Lec 1</th>
+      <th>Biology Lec 2</th>
+      <th>Penalty Extra</th>
+    </tr>
   </table>
 
-  <!-- Manage questions button and dropdown -->
   <div style="text-align: center; margin-top: 30px;">
     <button class="manage-btn" onclick="toggleDropdown()">➕ Manage Questions Solved</button>
-    <div id="dropdown" style="display:none;">
+    <button class="manage-btn" onclick="resetMonthlyTracker()">🔄 Reset Monthly Tracker</button>
+    <div id="dropdown" style="display: none; margin-top: 10px;">
       <button class="manage-btn" onclick="showSubject('physics')">📘️ Physics</button>
       <button class="manage-btn" onclick="showSubject('chemistry')">🧪 Chemistry</button>
       <button class="manage-btn" onclick="showSubject('botany')">🌿 Botany</button>
@@ -103,230 +105,379 @@
     </div>
   </div>
 
-  <!-- Subjects Sections -->
   <div id="physics" class="subject-section">
     <h2>📘️ Physics Chapters</h2>
     <table id="physics-table">
-      <thead>
-        <tr><th>Chapter</th><th>MR Questions</th><th>Saleem</th><th>Module</th><th>HCV</th><th>Misc</th><th>Penalty</th></tr>
-      </thead>
-      <tbody></tbody>
+      <tr>
+        <th>Chapter</th>
+        <th>MR Questions</th>
+        <th>Saleem</th>
+        <th>Module</th>
+        <th>HCV</th>
+        <th>Misc</th>
+        <th>Penalty</th>
+      </tr>
     </table>
   </div>
 
   <div id="chemistry" class="subject-section">
     <h2>🧪 Chemistry Chapters</h2>
     <table id="chemistry-table">
-      <thead>
-        <tr><th>Chapter</th><th>PYQ</th><th>Misc</th><th>Penalty</th></tr>
-      </thead>
-      <tbody></tbody>
+      <tr>
+        <th>Chapter</th>
+        <th>PYQ</th>
+        <th>Misc</th>
+        <th>Penalty</th>
+      </tr>
     </table>
   </div>
 
   <div id="botany" class="subject-section">
     <h2>🌿 Botany Chapters</h2>
     <table id="botany-table">
-      <thead>
-        <tr><th>Chapter</th><th>PYQ</th><th>Misc</th><th>Penalty</th></tr>
-      </thead>
-      <tbody></tbody>
+      <tr>
+        <th>Chapter</th>
+        <th>PYQ</th>
+        <th>Misc</th>
+        <th>Penalty</th>
+      </tr>
     </table>
   </div>
 
   <div id="zoology" class="subject-section">
     <h2>🦾 Zoology Chapters</h2>
     <table id="zoology-table">
-      <thead>
-        <tr><th>Chapter</th><th>PYQ</th><th>Misc</th><th>Penalty</th></tr>
-      </thead>
-      <tbody></tbody>
+      <tr>
+        <th>Chapter</th>
+        <th>PYQ</th>
+        <th>Misc</th>
+        <th>Penalty</th>
+      </tr>
     </table>
   </div>
 
-<script>
-  // Toggle dropdown visibility
-  function toggleDropdown() {
-    const dropdown = document.getElementById("dropdown");
-    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
-  }
+  <script>
+    // Monthly Tracker Table Logic
+    const table = document.getElementById("tracker-table");
+    const today = new Date().getDate();
+    const missedLectures = {};
 
-  // Show subject section and hide others
-  function showSubject(subject) {
-    const sections = document.querySelectorAll(".subject-section");
-    sections.forEach(s => s.classList.remove("active"));
-    document.getElementById(subject).classList.add("active");
-  }
-
-  // --------- MAIN TRACKER TABLE SETUP ---------
-  const tableBody = document.querySelector("#tracker-table tbody");
-  const today = new Date().getDate();
-  const missedLectures = {};
-
-  function getCheckboxState(id) {
-    return localStorage.getItem(id) === "true";
-  }
-
-  function addCross(cell) {
-    const cross = document.createElement("div");
-    cross.classList.add("cross");
-    cross.textContent = "✘";
-    cell.appendChild(cross);
-  }
-
-  function checkPenaltyForRow(dayRow, checkboxes) {
-    // penalty if all checkboxes unchecked (false)
-    const allUnchecked = checkboxes.every(cb => !cb.checked);
-    if(allUnchecked) {
-      dayRow.classList.add("penalty");
-    } else {
-      dayRow.classList.remove("penalty");
-    }
-  }
-
-  for(let day=1; day <= 30; day++) {
-    const row = document.createElement("tr");
-    const dayCell = document.createElement("td");
-    dayCell.textContent = `Day ${day}`;
-    row.appendChild(dayCell);
-
-    const checkboxes = [];
-    const missedToday = [];
-
-    for(let i=0; i<6; i++) {
-      const cell = document.createElement("td");
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      const id = `day${day}-lec${i+1}`;
-      checkbox.id = id;
-      checkbox.checked = getCheckboxState(id);
-
-      checkbox.addEventListener("change", () => {
-        localStorage.setItem(id, checkbox.checked);
-        checkPenaltyForRow(row, checkboxes);
-        location.reload();
-      });
-
-      checkboxes.push(checkbox);
-
-      // If past day and unchecked, mark missed
-      if(day < today && !checkbox.checked) {
-        missedToday.push(i);
-        addCross(cell);
-      }
-
-      cell.appendChild(checkbox);
-      row.appendChild(cell);
+    function getCheckboxState(id) {
+      return localStorage.getItem(id) === "true";
     }
 
-    missedLectures[day] = missedToday;
-
-    // Penalty extra checkbox if previous day had missed lectures
-    const extraCell = document.createElement("td");
-    const extraCheckboxId = `day${day}-extra`;
-    if(day > 1 && missedLectures[day-1].length > 0) {
-      const extraCheckbox = document.createElement("input");
-      extraCheckbox.type = "checkbox";
-      extraCheckbox.id = extraCheckboxId;
-      extraCheckbox.checked = getCheckboxState(extraCheckboxId);
-      extraCheckbox.addEventListener("change", () => {
-        localStorage.setItem(extraCheckboxId, extraCheckbox.checked);
-      });
-      extraCell.appendChild(extraCheckbox);
+    function addCross(cell) {
+      const cross = document.createElement("div");
+      cross.classList.add("cross");
+      cross.textContent = "✘";
+      cell.appendChild(cross);
     }
-    row.appendChild(extraCell);
 
-    checkPenaltyForRow(row, checkboxes);
-    tableBody.appendChild(row);
-  }
-
-  // --------- SUBJECT CHAPTERS DATA ---------
-  const physicsChapters = [
-    "Physical world and Measurement", "Physical world", "Units and measurements",
-    "Kinematics", "Motion in a straight line", "Motion in a plane", "Laws of Motion",
-    "Work, Energy and Power", "System of Particles and Rotational Motion", "Gravitation",
-    "Properties of Bulk Matter", "Mechanical properties of solids", "Mechanical properties of fluids",
-    "Thermal properties of matter", "Thermodynamics", "Behaviour of Perfect Gas and Kinetic Theory",
-    "Oscillations and Waves", "Oscillations", "Waves", "Electrostatics",
-    "Electric charges and fields", "Electrostatic potential and capacitance", "Current Electricity",
-    "Magnetic Effects of Current and Magnetism", "Moving charges and magnetism", "Magnetism and matter",
-    "Electromagnetic Induction and Alternating Currents", "Electromagnetic induction", "Alternating current",
-    "Electromagnetic Waves", "Optics", "Ray optics and optical instruments", "Wave optics",
-    "Dual Nature of Matter and Radiation", "Atoms and Nuclei", "Atoms", "Nuclei", "Electronic Devices",
-    "MR Questions", "Saleem Questions", "Module", "HCV", "Miscellaneous"
-  ];
-
-  const chemistryChapters = [
-    "Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements and Periodicity in Properties",
-    "Chemical Bonding and Molecular Structure", "States of Matter: Gases and Liquids", "Thermodynamics",
-    "Equilibrium", "Redox Reactions", "Hydrogen", "The p-Block Elements", "The d- and f-Block Elements",
-    "The Coordination Compounds", "The Environmental Chemistry", "The Basics of Organic Chemistry (General Organic Chemistry)",
-    "Hydrocarbons", "Organic Chemistry — Some Basic Principles and Techniques",
-    "Organic Compounds Containing Halogens", "Organic Compounds Containing Oxygen",
-    "Organic Compounds Containing Nitrogen", "Biomolecules", "Polymers", "Chemistry in Everyday Life"
-  ];
-
-  const botanyChapters = [
-    "The Living World", "Biological Classification", "Plant Kingdom", "Morphology of Flowering Plants",
-    "Anatomy of Flowering Plants", "Cell: The Unit of Life", "Cell Cycle and Cell Division",
-    "Photosynthesis in Higher Plants", "Respiration in Plants", "Plant Growth and Development",
-    "Sexual Reproduction in Flowering Plants", "Principles of Inheritance and Variation",
-    "Molecular Basis of Inheritance", "Microbes in Human Welfare", "Biotechnology: Principles and Processes",
-    "Biotechnology and Its Applications", "Organisms and Populations", "Ecosystem", "Biodiversity and Conservation"
-  ];
-
-  const zoologyChapters = [
-    "Structural Organisation in Animals", "Digestion and Absorption", "Breathing and Exchange of Gases",
-    "Body Fluids and Circulation", "Excretory Products and Their Elimination", "Locomotion and Movement",
-    "Neural Control and Coordination", "Chemical Coordination and Integration", "Human Reproduction",
-    "Reproductive Health", "Evolution", "Human Health and Disease", "Strategies for Enhancement in Food Production",
-    "Animal Husbandry", "Biotechnology and Its Applications", "Microbes in Human Welfare"
-  ];
-
-  // Helper to create rows with checkboxes for subject tables
-  function populateTable(tableId, chapters, tasksCount) {
-    const tbody = document.querySelector(`#${tableId} tbody`);
-    chapters.forEach((chapter, i) => {
+    for (let day = 1; day <= 30; day++) {
       const row = document.createElement("tr");
+      const checkboxes = [];
+      const missedToday = [];
 
-      // Chapter name cell
-      const chCell = document.createElement("td");
-      chCell.textContent = chapter;
-      row.appendChild(chCell);
+      const dayCell = document.createElement("td");
+      dayCell.textContent = `Day ${day}`;
+      row.appendChild(dayCell);
 
-      // Task checkboxes: PYQ, Misc, Penalty (or others depending on subject)
-      for(let t=0; t < tasksCount; t++) {
+      for (let i = 0; i < 6; i++) {
         const cell = document.createElement("td");
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
 
-        // Unique id for localStorage
-        const id = `${tableId}-ch${i}-task${t}`;
-        checkbox.checked = localStorage.getItem(id) === "true";
+        const checkboxId = `day${day}-lec${i + 1}`;
+        checkbox.id = checkboxId;
+
+        checkbox.checked = getCheckboxState(checkboxId);
 
         checkbox.addEventListener("change", () => {
-          localStorage.setItem(id, checkbox.checked);
+          localStorage.setItem(checkboxId, checkbox.checked);
+          checkPenalty(day);
+          location.reload();
         });
+
+        checkboxes.push(checkbox);
+
+        if (day < today && !checkbox.checked) {
+          missedToday.push(i);
+          addCross(cell);
+        }
 
         cell.appendChild(checkbox);
         row.appendChild(cell);
       }
 
-      // Penalty cell (empty, for manual marking or future use)
+      missedLectures[day] = missedToday;
+
+      const extraCell = document.createElement("td");
+      const extraCheckboxId = `day${day}-extra`;
+
+      if (day > 1 && missedLectures[day - 1].length > 0) {
+        const extraCheckbox = document.createElement("input");
+        extraCheckbox.type = "checkbox";
+        extraCheckbox.id = extraCheckboxId;
+        extraCheckbox.checked = getCheckboxState(extraCheckboxId);
+
+        extraCheckbox.addEventListener("change", () => {
+          localStorage.setItem(extraCheckboxId, extraCheckbox.checked);
+        });
+
+        extraCell.appendChild(extraCheckbox);
+      }
+
+      row.appendChild(extraCell);
+      table.appendChild(row);
+
+      function checkPenalty(dayIndex) {
+        if (dayIndex < today) {
+          const isAllUnchecked = checkboxes.every((cb) => !cb.checked);
+          row.classList.toggle("penalty", isAllUnchecked);
+        }
+      }
+
+      checkPenalty(day);
+    }
+
+    // Dropdown & Subject Sections
+    function toggleDropdown() {
+      const dropdown = document.getElementById("dropdown");
+      dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+    }
+
+    function showSubject(subjectId) {
+      const sections = document.querySelectorAll(".subject-section");
+      sections.forEach((section) => section.classList.remove("active"));
+
+      const subjectSection = document.getElementById(subjectId);
+      if (subjectSection) subjectSection.classList.add("active");
+      toggleDropdown();
+    }
+
+    // Reset Monthly Tracker checkboxes only
+    function resetMonthlyTracker() {
+      // Remove all keys from localStorage that start with 'day'
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith("day")) {
+          localStorage.removeItem(key);
+          i--; // Adjust index after removal
+        }
+      }
+      alert("Monthly study tracker has been reset!");
+      location.reload();
+    }
+
+    // Physics Chapters Data and Table Population (Example Only)
+    const physicsChapters = [
+      "Physical world and Measurement",
+      "Physical world",
+      "Units and measurements",
+      "Kinematics",
+      "Motion in a straight line",
+      "Motion in a plane",
+      "Laws of Motion",
+      "Work, Energy and Power",
+      "System of Particles and Rotational Motion",
+      "Gravitation",
+      "Properties of Bulk Matter",
+      "Mechanical properties of solids",
+      "Mechanical properties of fluids",
+      "Thermal properties of matter",
+      "Thermodynamics",
+      "Behaviour of Perfect Gas and Kinetic Theory",
+      "Oscillations and Waves",
+      "Oscillations",
+      "Waves",
+      "Electrostatics",
+      "Electric charges and fields",
+      "Electrostatic potential and capacitance",
+      "Current Electricity",
+      "Magnetic Effects of Current and Magnetism",
+      "Moving charges and magnetism",
+      "Magnetism and matter",
+      "Electromagnetic Induction and Alternating Currents",
+      "Electromagnetic induction",
+      "Alternating current",
+      "Electromagnetic Waves",
+      "Optics",
+      "Ray optics and optical instruments",
+      "Wave optics",
+      "Dual Nature of Matter and Radiation",
+      "Atoms and Nuclei",
+      "Atoms",
+      "Nuclei",
+      "Electronic Devices",
+      "MR questions",
+      "Saleem questions",
+      "Module",
+      "HCV",
+      "Miscellaneous",
+    ];
+
+    const physicsTable = document.getElementById("physics-table");
+    physicsChapters.forEach((chapter, index) => {
+      const row = document.createElement("tr");
+
+      const chapterCell = document.createElement("td");
+      chapterCell.textContent = chapter;
+      row.appendChild(chapterCell);
+
+      // Add checkboxes for MR, Saleem, Module, HCV, Misc
+      const tasks = ["mr", "saleem", "module", "hcv", "misc"];
+      tasks.forEach((task, idx) => {
+        const cell = document.createElement("td");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        const id = `physics-ch${index}-${task}`;
+        checkbox.checked = localStorage.getItem(id) === "true";
+        checkbox.addEventListener("change", () => localStorage.setItem(id, checkbox.checked));
+        cell.appendChild(checkbox);
+        row.appendChild(cell);
+      });
+
+      // Penalty cell placeholder
       const penaltyCell = document.createElement("td");
       row.appendChild(penaltyCell);
 
-      tbody.appendChild(row);
+      physicsTable.appendChild(row);
     });
-  }
 
-  // Populate tables for subjects
-  populateTable("physics-table", physicsChapters, 5); // MR, Saleem, Module, HCV, Misc
-  populateTable("chemistry-table", chemistryChapters, 2); // PYQ, Misc
-  populateTable("botany-table", botanyChapters, 2); // PYQ, Misc
-  populateTable("zoology-table", zoologyChapters, 2); // PYQ, Misc
+    // Chemistry Chapters and Table
+    const chemistryChapters = [
+      "Some Basic Concepts of Chemistry",
+      "Structure of Atom",
+      "Classification of Elements and Periodicity in Properties",
+      "Chemical Bonding and Molecular Structure",
+      "States of Matter: Gases and Liquids",
+      "Thermodynamics",
+      "Equilibrium",
+      "Redox Reactions",
+      "Hydrogen",
+      "The p-Block Elements",
+      "The d- and f-Block Elements",
+      "The Coordination Compounds",
+      "The Environmental Chemistry",
+      "The Basics of Organic Chemistry (Some Basic Principles and Techniques)",
+      "Hydrocarbons",
+      "Organic Compounds Containing Halogens",
+      "Organic Compounds Containing Oxygen",
+      "Organic Compounds Containing Nitrogen",
+      "Polymers",
+      "Biomolecules",
+      "Chemistry in Everyday Life",
+    ];
 
-</script>
+    const chemistryTable = document.getElementById("chemistry-table");
+    chemistryChapters.forEach((chapter, index) => {
+      const row = document.createElement("tr");
 
+      const chapterCell = document.createElement("td");
+      chapterCell.textContent = chapter;
+      row.appendChild(chapterCell);
+
+      ["pyq", "misc"].forEach((task) => {
+        const cell = document.createElement("td");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        const id = `chemistry-ch${index}-${task}`;
+        checkbox.checked = localStorage.getItem(id) === "true";
+        checkbox.addEventListener("change", () => localStorage.setItem(id, checkbox.checked));
+        cell.appendChild(checkbox);
+        row.appendChild(cell);
+      });
+
+      const penaltyCell = document.createElement("td");
+      row.appendChild(penaltyCell);
+
+      chemistryTable.appendChild(row);
+    });
+
+    // Botany Chapters & Table
+    const botanyChapters = [
+      "The Living World",
+      "Biological Classification",
+      "Plant Kingdom",
+      "Morphology of Flowering Plants",
+      "Anatomy of Flowering Plants",
+      "Cell: The Unit of Life",
+      "Cell Cycle and Cell Division",
+      "Photosynthesis in Higher Plants",
+      "Respiration in Plants",
+      "Plant Growth and Development",
+      "Sexual Reproduction in Flowering Plants",
+      "Principles of Inheritance and Variation",
+      "Molecular Basis of Inheritance",
+      "Microbes in Human Welfare",
+      "Biotechnology: Principles and Processes",
+      "Biotechnology and Its Applications",
+      "Organisms and Populations",
+      "Ecosystem",
+      "Biodiversity and Conservation",
+    ];
+
+    const botanyTable = document.getElementById("botany-table");
+    botanyChapters.forEach((chapter, index) => {
+      const row = document.createElement("tr");
+      const chapterCell = document.createElement("td");
+      chapterCell.textContent = chapter;
+      row.appendChild(chapterCell);
+      ["pyq", "misc"].forEach((task, i) => {
+        const cell = document.createElement("td");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        const id = `botany-ch${index}-task${i}`;
+        checkbox.checked = localStorage.getItem(id) === "true";
+        checkbox.addEventListener("change", () => localStorage.setItem(id, checkbox.checked));
+        cell.appendChild(checkbox);
+        row.appendChild(cell);
+      });
+      const penaltyCell = document.createElement("td");
+      row.appendChild(penaltyCell);
+      botanyTable.appendChild(row);
+    });
+
+    // Zoology Chapters & Table
+    const zoologyChapters = [
+      "Structural Organisation in Animals",
+      "Digestion and Absorption",
+      "Breathing and Exchange of Gases",
+      "Body Fluids and Circulation",
+      "Excretory Products and Their Elimination",
+      "Locomotion and Movement",
+      "Neural Control and Coordination",
+      "Chemical Coordination and Integration",
+      "Human Reproduction",
+      "Reproductive Health",
+      "Evolution",
+      "Human Health and Disease",
+      "Strategies for Enhancement in Food Production",
+      "Animal Husbandry",
+      "Biotechnology and Its Applications",
+      "Microbes in Human Welfare",
+    ];
+
+    const zoologyTable = document.getElementById("zoology-table");
+    zoologyChapters.forEach((chapter, index) => {
+      const row = document.createElement("tr");
+      const chapterCell = document.createElement("td");
+      chapterCell.textContent = chapter;
+      row.appendChild(chapterCell);
+      ["pyq", "misc"].forEach((task, i) => {
+        const cell = document.createElement("td");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        const id = `zoology-ch${index}-task${i}`;
+        checkbox.checked = localStorage.getItem(id) === "true";
+        checkbox.addEventListener("change", () => localStorage.setItem(id, checkbox.checked));
+        cell.appendChild(checkbox);
+        row.appendChild(cell);
+      });
+      const penaltyCell = document.createElement("td");
+      row.appendChild(penaltyCell);
+      zoologyTable.appendChild(row);
+    });
+  </script>
 </body>
 </html>
